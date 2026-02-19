@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -46,10 +48,13 @@ func main() {
 	mux.HandleFunc("DELETE /api/items/{id}", s.handleDeleteItem)
 	mux.HandleFunc("GET /api/cache/{key}", s.handleGetCache)
 	mux.HandleFunc("PUT /api/cache/{key}", s.handleSetCache)
+	mux.Handle("GET /metrics", promhttp.Handler())
+
+	registerDBStatsCollector(&s)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
-		Handler:      mux,
+		Handler:      metricsMiddleware(mux),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
