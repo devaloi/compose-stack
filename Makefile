@@ -13,7 +13,7 @@ up:
 	docker compose up -d
 
 up-all:
-	docker compose --profile monitoring --profile dev up -d
+	docker compose --profile monitoring -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 down:
 	docker compose down
