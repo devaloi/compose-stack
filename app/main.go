@@ -28,12 +28,24 @@ func main() {
 		log.Println("connected to PostgreSQL")
 	}
 
+	if redisURL := os.Getenv("REDIS_URL"); redisURL != "" {
+		cache, err := NewRedisCache(redisURL)
+		if err != nil {
+			log.Fatalf("failed to connect to redis: %v", err)
+		}
+		defer cache.Close()
+		s.cache = cache
+		log.Println("connected to Redis")
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.handleHealth)
 	mux.HandleFunc("GET /api/items", s.handleListItems)
 	mux.HandleFunc("POST /api/items", s.handleCreateItem)
 	mux.HandleFunc("GET /api/items/{id}", s.handleGetItem)
 	mux.HandleFunc("DELETE /api/items/{id}", s.handleDeleteItem)
+	mux.HandleFunc("GET /api/cache/{key}", s.handleGetCache)
+	mux.HandleFunc("PUT /api/cache/{key}", s.handleSetCache)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
