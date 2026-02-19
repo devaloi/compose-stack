@@ -16,8 +16,24 @@ func main() {
 		port = "8080"
 	}
 
+	var s server
+
+	if dsn := os.Getenv("DB_URL"); dsn != "" {
+		store, err := NewPostgresStore(dsn)
+		if err != nil {
+			log.Fatalf("failed to connect to database: %v", err)
+		}
+		defer store.Close()
+		s.store = store
+		log.Println("connected to PostgreSQL")
+	}
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", handleHealth)
+	mux.HandleFunc("GET /health", s.handleHealth)
+	mux.HandleFunc("GET /api/items", s.handleListItems)
+	mux.HandleFunc("POST /api/items", s.handleCreateItem)
+	mux.HandleFunc("GET /api/items/{id}", s.handleGetItem)
+	mux.HandleFunc("DELETE /api/items/{id}", s.handleDeleteItem)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
