@@ -1,5 +1,7 @@
 # compose-stack
 
+[![CI](https://github.com/devaloi/compose-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/devaloi/compose-stack/actions/workflows/ci.yml)
+
 A production-ready Docker Compose reference architecture with a Go API, PostgreSQL, Redis, Nginx reverse proxy, Prometheus metrics, and Grafana dashboards — fully wired with health checks, profiles, and one-command startup.
 
 ## Architecture

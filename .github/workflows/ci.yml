@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: app/go.mod
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+      - name: Build
+        run: go build -o /dev/null .
+
+  lint-go:
+    name: Lint Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: app/go.mod
+
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: app
+
+  docker:
+    name: Docker Compose Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env for validation
+        run: cp .env.example .env
+
+      - name: Validate docker-compose.yml
+        run: docker compose config --quiet
+
+      - name: Validate docker-compose.dev.yml override
+        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet
+
+  hadolint:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: .
+          ignore_paths: .git
+
+  yaml-lint:
+    name: YAML Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install --user yamllint
+
+      - name: Lint YAML files
+        run: yamllint -d relaxed docker-compose.yml docker-compose.dev.yml prometheus/prometheus.yml grafana/provisioning/datasources/prometheus.yml
