@@ -73,7 +73,7 @@ func TestHandleListItems(t *testing.T) {
 		t.Errorf("expected 200, got %d", rec.Code)
 	}
 	var items []Item
-	json.NewDecoder(rec.Body).Decode(&items)
+	_ = json.NewDecoder(rec.Body).Decode(&items)
 	if len(items) != 1 {
 		t.Errorf("expected 1 item, got %d", len(items))
 	}

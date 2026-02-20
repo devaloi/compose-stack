@@ -31,7 +31,7 @@ var (
 		Help: "Active PostgreSQL connections.",
 	}, func() float64 { return 0 })
 
-	redisCommandsTotal = promauto.NewCounter(prometheus.CounterOpts{
+	_ = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "redis_commands_total",
 		Help: "Total Redis commands executed.",
 	})

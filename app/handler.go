@@ -36,7 +36,7 @@ func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (s *server) handleListItems(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func (s *server) handleListItems(w http.ResponseWriter, r *http.Request) {
 		items = []Item{}
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(items)
+	_ = json.NewEncoder(w).Encode(items)
 }
 
 func (s *server) handleCreateItem(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +73,7 @@ func (s *server) handleCreateItem(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(item)
+	_ = json.NewEncoder(w).Encode(item)
 }
 
 func (s *server) handleGetItem(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +93,7 @@ func (s *server) handleGetItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(item)
+	_ = json.NewEncoder(w).Encode(item)
 }
 
 func (s *server) handleDeleteItem(w http.ResponseWriter, r *http.Request) {
@@ -122,7 +122,7 @@ func (s *server) handleGetCache(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"key": key, "value": val})
+	_ = json.NewEncoder(w).Encode(map[string]string{"key": key, "value": val})
 }
 
 func (s *server) handleSetCache(w http.ResponseWriter, r *http.Request) {
@@ -151,5 +151,5 @@ func (s *server) handleSetCache(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"key": key, "value": req.Value})
+	_ = json.NewEncoder(w).Encode(map[string]string{"key": key, "value": req.Value})
 }

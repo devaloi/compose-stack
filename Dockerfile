@@ -10,6 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app .
 
 FROM alpine:3.19
 
+# hadolint ignore=DL3018
 RUN apk --no-cache add ca-certificates \
     && addgroup -S appgroup \
     && adduser -S appuser -G appgroup
